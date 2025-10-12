@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import DateTime from "./components/DateTime";
 import Forecast from "./components/Forecast";
-import Input from "./components/Input";
-import WeatherDegree from "./components/WeatherDegree";
+import SearchBox from "./components/input.jsx";
+import WeatherDegree from "./components/WeatherDegree.jsx";
 import NextDaysForecast from "./components/NextDaysForecast";
 import "./App.css";
 
@@ -16,19 +16,24 @@ export default function App() {
   const [error, setError] = useState("");
 
   const fetchWeather = async () => {
-    if (!city) return;
-    setLoading(true); 
+    if (!city.trim()) return;
+    setLoading(true);
     setError("");
+
     try {
       const response = await fetch(
         `${WEATHER_API_BASE_URL}/weather?q=${city}&units=metric&appid=${API_KEY}`
       );
+
       if (!response.ok) throw new Error("City not found");
+
       const data = await response.json();
       setWeather({
         name: data.name,
         temp: Math.round(data.main.temp),
         condition: data.weather[0].main.toLowerCase(),
+        windSpeed: Math.round(data.wind?.speed ?? 0),
+        windDir: getWindDirection(data.wind?.deg ?? 0),
       });
     } catch (err) {
       setError(err.message);
@@ -38,72 +43,77 @@ export default function App() {
     }
   };
 
+  const getWindDirection = (deg) => {
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    const index = Math.round(deg / 45) % 8;
+    return directions[index];
+  };
+
   const getBackgroundImage = () => {
-    if (!weather) return "/images/rainy.jpg";
+    if (!weather) return "/images/default.jpg";
     switch (weather.condition) {
       case "clear":
-        return "/images/winter.jpg";
+        return "/images/clear-sky.jpg";
       case "snow":
         return "/images/snowy.jpg";
       case "rain":
       case "drizzle":
-        return "/images/rain.jpg";
+        return "/images/rainy.jpg";
       case "clouds":
+        return "/images/cloudy.jpg";
+      case "mist":
+      case "fog":
         return "/images/misty.jpg";
       default:
-        return "/images/rain.webp";
+        return "/images/default.jpg";
     }
   };
 
-  // Set body background (blur)
-  useEffect(() => {
-    const image = getBackgroundImage();
-    document.body.style.backgroundImage = `url(${image})`;
-    document.body.style.backgroundSize = "cover";
-    document.body.style.backgroundRepeat = "no-repeat";
-    document.body.style.backgroundPosition = "center";
-   
-    document.body.style.height = "100%";
-    document.body.style.margin = "0";
-  }, [weather]);
+  const bgImage = getBackgroundImage();
 
   return (
-    <div className="relative flex justify-center items-center min-h-screen">
-      {/* Main container div (sharp, clear) */}
+    <div className="flex items-center justify-center min-h-screen bg-black/40 p-4">
+      {/* Main Container (100vh fixed height, responsive) */}
       <div
-        className="relative w-[90%] h-[90vh] border-12 border-white/20 shadow-2xl
-        bg-cover bg-center bg-no-repeat rounded-2xl
-        grid grid-cols-[75%_25%] text-white z-10 "
-        style={{ backgroundImage: `url(${getBackgroundImage()})` }}
+        className="w-full max-w-7xl h-[100vh] md:h-[90vh] rounded-2xl shadow-2xl overflow-hidden 
+        grid grid-cols-1 md:grid-cols-[65%_35%] text-white transition-all duration-500"
+        style={{
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.35)), url(${bgImage})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
-        {/* Left side */}
-        <div className="p-6 flex flex-col rounded-l-2xl ">
-          <div className="flex justify-end text-xl font-medium text-white/85 bg-clip-text ">
+        {/* LEFT PANEL */}
+        <div className="flex flex-col justify-between p-6 sm:p-8 overflow-hidden">
+          {/* Date and Time */}
+          <div className="flex justify-end text-base sm:text-lg font-medium text-white/90">
             <DateTime />
           </div>
 
-          <div className="flex justify-end items-end mb-12 flex-1">
-            <h1 className="text-8xl font-semibold text-transparent bg-clip-text bg-gradient-to-l from-white/30 to-white/75">
-              {weather ? weather.condition : "Search City"}
+          {/* Weather Condition */}
+          <div className="flex justify-end items-end flex-1 mb-8 sm:mb-10">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-semibold text-transparent bg-clip-text bg-gradient-to-l from-white/50 to-white capitalize tracking-tight">
+              {weather ? weather.condition : "Search your city"}
             </h1>
           </div>
 
-          <div className="border-b-2 border-white/30"></div>
+          <div className="border-b border-white/30 my-4"></div>
 
-          <div>
+          {/* Forecast */}
+          <div className="overflow-auto">
             <Forecast key={weather?.name || city} city={weather?.name || city} />
           </div>
         </div>
 
-        {/* Right side */}
-        <div className="flex flex-col p-6 backdrop-blur-sm border-l-2 border-white/20 rounded-r-2xl">
-          <Input city={city} setCity={setCity} fetchWeather={fetchWeather} />
+        {/* RIGHT PANEL */}
+        <div className="flex flex-col justify-start p-6 sm:p-8 backdrop-blur-md border-t md:border-t-0 md:border-l border-white/20 rounded-b-2xl md:rounded-r-2xl overflow-hidden">
+          <SearchBox city={city} setCity={setCity} fetchWeather={fetchWeather} />
 
-          <div className="flex items-center justify-center mt-6">
+          <div className="flex justify-center mt-6">
             <WeatherDegree weather={weather} loading={loading} error={error} />
           </div>
 
-          <div className="flex items-center justify-center w-full max-w-[500px] mx-auto p-2 mt-14">
+          <div className="flex-1 overflow-auto mt-8 sm:mt-12">
             <NextDaysForecast key={weather?.name || city} city={weather?.name || city} />
           </div>
         </div>

@@ -11,6 +11,7 @@ export default function NextDaysForecast({ city }) {
 
   useEffect(() => {
     if (!city) return;
+
     const fetchForecast = async () => {
       setLoading(true);
       setError("");
@@ -56,15 +57,19 @@ export default function NextDaysForecast({ city }) {
   }, [city]);
 
   return (
-    <div
-      className=" w-[350px]"
-    >
-      <h2 className=" flex justify-center text-2xl font-bold  text-white">Next Days Forecast</h2>
+    <div className="flex flex-col items-center w-full max-w-[400px] p-4 bg-black/30 backdrop-blur-md rounded-sm mt-4 md:mt-2">
+      <h2 className="text-xl md:text-xl font-bold text-white mb-2 text-center">
+        Next Days Forecast
+      </h2>
 
-      {loading && <p className="text-gray-900">Loading forecast...</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && (
+        <p className="text-gray-300 text-center py-2">Loading forecast...</p>
+      )}
+      {error && (
+        <p className="text-red-400 text-center py-2">{error}</p>
+      )}
 
-      <div className=" ">
+      <div className="flex flex-col gap-2  w-full">
         {forecast.map(([date, day], idx) => (
           <ForecastItem
             key={idx}

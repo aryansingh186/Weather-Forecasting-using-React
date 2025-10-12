@@ -22,7 +22,7 @@ export default function Forecast({ city }) {
         if (!response.ok) throw new Error("Forecast not available");
         const data = await response.json();
 
-        // Filter next 10 time slots (3-hourly data)
+        // Take next 10 slots
         const sliced = data.list.slice(0, 10).map((item) => ({
           time: new Date(item.dt * 1000).toLocaleTimeString([], {
             hour: "2-digit",
@@ -41,39 +41,45 @@ export default function Forecast({ city }) {
     };
 
     fetchForecast();
-  }, [city]); // 
+  }, [city]);
 
-  // Function to render correct icon
   const renderIcon = (icon) => {
-    if (icon.includes("rain")) return <CloudRain size={32} />;
-    if (icon.includes("cloud")) return <Cloud size={32} />;
-    return <Sun size={32} />;
+    if (icon.includes("rain")) return <CloudRain size={28} />;
+    if (icon.includes("cloud")) return <Cloud size={28} />;
+    return <Sun size={28} />;
   };
 
   if (loading)
     return (
-      <div className="text-gray-400 flex justify-center py-6">
+      <div className="text-gray-300 flex justify-center py-6">
         Loading forecast...
       </div>
     );
 
   if (error)
-    return (
-      <div className="text-red-400 flex justify-center py-6">{error}</div>
-    );
+    return <div className="text-red-400 flex justify-center py-6">{error}</div>;
 
   return (
-    <div className="flex justify-around ">
-      {forecast.map((item, index) => (
-        <div
-          key={index}
-          className="bg-black/20 backdrop-blur-sm p-2   rounded-md px-2 py-4 flex flex-col items-center text-white min-w-[100px] h-[160px] gap-4  my-6"
-        >
-          <span className="text-sm underline underline-offset-8 decoration-white/25 text-white ">{item.time}</span>
-          <div className="py-2 px-2 rounded-md bg-white/10">{renderIcon(item.icon)}</div>
-          <span className="text-lg font-bold">{item.temp}</span>
-        </div>
-      ))}
+    <div>
+      {/* Small screens: horizontal scroll, large screens: show max 6 cards */}
+      <div className="flex gap-3 sm:gap-4 overflow-x-auto md:overflow-x-hidden scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent py-3 px-1">
+        {forecast.map((item, index) => (
+          <div
+            key={index}
+            className="
+              flex flex-col items-center justify-center 
+              bg-white/10 backdrop-blur-md rounded-md 
+              sm:min-w-[130px] md:min-w-0 
+              md:flex-1 md:max-w-[120px] p-3 sm:p-4 
+              hover:bg-white/20 transition-all duration-200
+            "
+          >
+            <span className="text-xs sm:text-sm text-white/90">{item.time}</span>
+            <div className="my-2">{renderIcon(item.icon)}</div>
+            <span className="text-sm sm:text-base font-medium">{item.temp}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
