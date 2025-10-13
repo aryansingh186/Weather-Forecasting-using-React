@@ -69,44 +69,44 @@ export default function App() {
     }
   };
 
-  const bgImage = getBackgroundImage();
+  const leftBgImage = getBackgroundImage();
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black/40 p-4">
-      {/* Main Container (100vh fixed height, responsive) */}
+    <div className="flex items-center justify-center min-h-screen p-4 bg-neutral-900">
+      {/* Main Container */}
       <div
         className="w-full max-w-7xl h-[100vh] md:h-[90vh] rounded-2xl shadow-2xl overflow-hidden 
-        grid grid-cols-1 md:grid-cols-[65%_35%] text-white transition-all duration-500"
-        style={{
-          backgroundImage: `linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.35)), url(${bgImage})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        grid grid-cols-1 md:grid-cols-[65%_35%] text-white border border-white/10 backdrop-blur-sm"
       >
-        {/* LEFT PANEL */}
-        <div className="flex flex-col justify-between p-6 sm:p-8 overflow-hidden">
-          {/* Date and Time */}
-          <div className="flex justify-end text-base sm:text-lg font-medium text-white/90">
+        {/* LEFT PANEL with dynamic background */}
+        <div
+          className="flex flex-col justify-between p-6 sm:p-8 overflow-hidden transition-all duration-700 bg-cover bg-center relative"
+          style={{
+            backgroundImage: `url(${leftBgImage})`,
+          }}
+        >
+          {/* Overlay (optional, soft gradient for readability) */}
+          <div className="absolute inset-0 bg-black/30" />
+
+          <div className="relative z-10 flex justify-end text-base sm:text-lg font-medium text-white/90">
             <DateTime />
           </div>
 
-          {/* Weather Condition */}
-          <div className="flex justify-end items-end flex-1 mb-8 sm:mb-10">
-            <h1 className="text-4xl sm:text-6xl md:text-7xl font-semibold text-transparent bg-clip-text bg-gradient-to-l from-white/50 to-white capitalize tracking-tight">
+          <div className="relative z-10 flex justify-end items-end flex-1 mb-8 sm:mb-10">
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-semibold text-transparent bg-clip-text bg-gradient-to-l from-white/70 to-white capitalize tracking-tight">
               {weather ? weather.condition : "Search your city"}
             </h1>
           </div>
 
-          <div className="border-b border-white/30 my-4"></div>
+          <div className="relative z-10 border-b border-white/40 my-4"></div>
 
-          {/* Forecast */}
-          <div className="overflow-auto">
+          <div className="relative z-10 overflow-auto">
             <Forecast key={weather?.name || city} city={weather?.name || city} />
           </div>
         </div>
 
-        {/* RIGHT PANEL */}
-        <div className="flex flex-col justify-start p-6 sm:p-8 backdrop-blur-md border-t md:border-t-0 md:border-l border-white/20 rounded-b-2xl md:rounded-r-2xl overflow-hidden">
+        {/* RIGHT PANEL (static background, slightly transparent) */}
+        <div className="flex flex-col justify-start p-6 sm:p-8 border-t md:border-t-0 md:border-l border-white/20 rounded-b-2xl md:rounded-r-2xl overflow-hidden bg-white/10 backdrop-blur-md">
           <SearchBox city={city} setCity={setCity} fetchWeather={fetchWeather} />
 
           <div className="flex justify-center mt-6">
