@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import DateTime from "./components/DateTime";
 import Forecast from "./components/Forecast";
 import SearchBox from "./components/input.jsx";
-import WeatherDegree from "./components/WeatherDegree.jsx";
+import weatherDegree from "./components/weatherDegree.jsx";
 import NextDaysForecast from "./components/NextDaysForecast";
 import "./App.css";
 
