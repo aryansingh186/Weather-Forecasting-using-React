@@ -2,9 +2,9 @@
 
 A simple React app to check current weather and 7-day forecasts for any city worldwide.
 
-🌐 Live Demo
 
-weather-forecasting-2025.netlify.app
+
+[🌐 Live Demo](weather-forecasting-2025.netlify.app)
 
 🛠️ Built With
 
