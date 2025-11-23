@@ -6,7 +6,7 @@ Designed with a clean UI and optimized for fast performance.
 
 ---
 
-## 🚀 Live Demo  
+##  Live Demo  
 🔗 https://weather-forecasting-using-react.vercel.app/
 
 ---
